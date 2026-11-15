@@ -1,0 +1,37 @@
+name: Build cplatency
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      
+uses: actions/checkout@v4
+
+      
+name: Set up Visual Studio compiler (x64)
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
+      
+name: Build cplatency.dll
+      shell: cmd
+      run: cl /nologo /O2 /GL /MT /EHsc /LD cplatency.cpp /link /OUT:cplatency.dll
+
+      
+name: Build cplatency_inject.exe
+      shell: cmd
+      run: cl /nologo /O2 /MT /EHsc cplatency_inject.cpp /link /OUT:cplatency_inject.exe advapi32.lib
+
+      
+name: Upload build
+      uses: actions/upload-artifact@v4
+      with:
+        name: cplatency-build
+        path: |
+          cplatency.dll
+          cplatency_inject.exe
